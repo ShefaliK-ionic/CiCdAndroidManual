@@ -2,11 +2,10 @@ name: AndroidBuild
 on:
   pull_request:
     branches: [ main ]
-
   push:
     branches: [main]
 
-  jobs:
+jobs:
     build :
       runs-on: windows
       steps:
