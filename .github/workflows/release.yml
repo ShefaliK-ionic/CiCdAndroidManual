@@ -1,0 +1,57 @@
+name: Deploy to google play
+on:
+  push:
+    branches:[master]
+
+  jobs:
+    test:
+      name: Unit Test
+      runs-on:  windows-latest
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4.2.2
+
+        - name: Setup Java JDK
+          uses: actions/setup-java@v4.5.0
+          with:
+            java-version: '17'
+            distribution: 'adopt'
+
+        - name: Grant execute permission for gradle
+          run: chmod +x gradlew
+
+        - name: Run unit tests
+          run: ./gradlew clean testDebug
+
+    distribute:
+        name: Distribute bundle to Google play
+        needs: test
+        runs-on:  windows-latest
+
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4.2.2
+
+          - name: Setup Java JDK
+            uses: actions/setup-java@v4.5.0
+            with:
+              java-version: '17'
+              distribution: 'adopt'
+
+          - name: Version Bump
+            uses: opspresso/action-version@v0.2.5
+            with:
+              gradlePath: app/build.gradle.kts
+              versionCode: ${{ github.run_number }}
+
+          - name: Assemble Release Bundle
+            run: ./gradlew bundleRelease
+
+          - name: Sign Android release
+            uses: r0adkll/sign-android-release@349ebdef58775b1e0d8099458af0816dc79b6
+            with :
+              releaseDirectory: app/build/outputs/bundle/release
+              signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
+
+
