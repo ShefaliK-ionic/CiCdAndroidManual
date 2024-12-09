@@ -18,3 +18,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
+//https://medium.com/@jovmit/ci-cd-for-android-requirements-2fd7f5a92a04
